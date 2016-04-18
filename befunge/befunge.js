@@ -6,7 +6,7 @@
  *
  */
 
-module.exports = interpret;
+module.exports = befunge;
 
 function befunge(code) {
   "use strict";
@@ -23,7 +23,7 @@ function befunge(code) {
   // pass in modification function, eg: _=>++x
   function next(modifier) {
     return function(m) {
-      if (m) return n(m);
+      if (m) return next(m);
       modifier();
       if (y === grid.length) {
         y = 0;
@@ -59,18 +59,18 @@ function befunge(code) {
       case '%': t=s.p();s.push(t?s.p()%t:0); break;
       case '!': s.push(s.p()===0?1:0); break;
       case '`': s.push(s.p()<s.p()?1:0); break;
-      case '>': n=next(_=>++x); break;
-      case '<': n=next(_=>--x); break;
-      case '^': n=next(_=>--y); break;
-      case 'v': n=next(_=>++y); break;
+      case '>': n=n(_=>++x); break;
+      case '<': n=n(_=>--x); break;
+      case '^': n=n(_=>--y); break;
+      case 'v': n=n(_=>++y); break;
       case '?': t=Math.random();
-                t>0.75?n=next(_=>++x):
-                t>0.50?n=next(_=>--x):
-                t>0.25?n=next(_=>++y):
-                       n=next(_=>--y);
+                t>0.75?n=n(_=>++x):
+                t>0.50?n=n(_=>--x):
+                t>0.25?n=n(_=>++y):
+                       n=n(_=>--y);
                 break;
-      case '_': s.p()===0?n=next(_=>++x):n=next(_=>--x); break;
-      case '|': s.p()===0?n=next(_=>++y):n=next(_=>--y); break;
+      case '_': s.p()===0?n=n(_=>++x):n=n(_=>--x); break;
+      case '|': s.p()===0?n=n(_=>++y):n=n(_=>--y); break;
       case '"': while (n()!=='"'){ s.push(c.charCodeAt(0)); } break;
       case ':': t=s.p(); s.push(t,t); break;
       case '\\': t=s.p();t^=s[s.length-1];s[s.length-1]^=t;s.push(t^=s[s.length-1]); break;
